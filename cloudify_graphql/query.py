@@ -4,13 +4,9 @@
 
 import graphene
 import requests
+
+from flask import current_app as app
 from requests.auth import HTTPBasicAuth
-
-
-MANAGER_IP = '172.20.0.2'
-TENANT = 'default_tenant'
-USER = 'admin'
-PASSWORD = 'admin'
 
 
 class Tenant(graphene.ObjectType):
@@ -46,13 +42,13 @@ class Query(graphene.ObjectType):
 
     def resolve_tenants(self, args, context, info):
         """Get list of tenants."""
-        url = 'http://{}/api/v3/tenants'.format(MANAGER_IP)
+        url = 'http://{}/api/v3/tenants'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': TENANT,
+            'Tenant': app.config['TENANT'],
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(USER, PASSWORD),
+            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
         )
         tenants = [
