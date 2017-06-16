@@ -15,6 +15,7 @@ requirements = [
     'Flask',
     'Flask-GraphQL',
     'graphene',
+    'requests',
 ]
 
 setup_requirements = [
