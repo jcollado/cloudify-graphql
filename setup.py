@@ -13,6 +13,8 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Flask',
+    'Flask-GraphQL',
+    'graphene',
 ]
 
 setup_requirements = [
