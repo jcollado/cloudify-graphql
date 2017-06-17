@@ -10,6 +10,7 @@ import requests
 from flask import current_app as app
 from requests.auth import HTTPBasicAuth
 
+from cloudify_graphql.model.blueprint import Blueprint
 from cloudify_graphql.model.tenant import Tenant
 from cloudify_graphql.model.user import User
 from cloudify_graphql.model.user_group import UserGroup
@@ -17,6 +18,10 @@ from cloudify_graphql.model.user_group import UserGroup
 
 class Query(graphene.ObjectType):
     """Main GraphQL query."""
+    blueprints = graphene.List(
+        Blueprint,
+        description='Cloudify blueprints',
+    )
     ping = graphene.String(description='Check API status')
     tenants = graphene.List(
         Tenant,
@@ -30,6 +35,38 @@ class Query(graphene.ObjectType):
         UserGroup,
         description='Cloudify user groups',
     )
+
+    def resolve_blueprints(self, args, context, info):
+        """Get list of blueprints."""
+        url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
+        headers = {
+            'Tenant': app.config['TENANT'],
+        }
+        response = requests.get(
+            url,
+            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
+            headers=headers,
+        )
+        blueprints = [
+            Blueprint(
+                created_at=(
+                    iso8601.parse_date(blueprint_data['created_at'])
+                    if blueprint_data['created_at']
+                    else None
+                ),
+                description=blueprint_data['description'],
+                id=blueprint_data['id'],
+                main_file_name=blueprint_data['main_file_name'],
+                updated_at=(
+                    iso8601.parse_date(blueprint_data['updated_at'])
+                    if blueprint_data['updated_at']
+                    else None
+                ),
+            )
+            for blueprint_data
+            in response.json()['items']
+        ]
+        return blueprints
 
     def resolve_ping(self, args, context, info):
         """Return ping response."""
