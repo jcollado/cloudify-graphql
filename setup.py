@@ -15,6 +15,7 @@ requirements = [
     'Flask',
     'Flask-GraphQL',
     'graphene',
+    'iso8601',
     'requests',
 ]
 

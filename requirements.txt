@@ -1,4 +1,5 @@
 Flask-GraphQL==1.4.1
 Flask==0.12.2
 graphene==1.4
+iso8601==0.1.11
 requests==2.18.1
