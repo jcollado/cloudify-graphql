@@ -9,13 +9,11 @@ import requests
 from flask import current_app as app
 from requests.auth import HTTPBasicAuth
 
-from cloudify_graphql.model.blueprint import Blueprint
-
 
 class Deployment(graphene.ObjectType):
     """A deployment."""
     blueprint = graphene.Field(
-        Blueprint,
+        'cloudify_graphql.model.blueprint.Blueprint',
         description='The blueprint the deployment is based on',
     )
     blueprint_id = graphene.String(
@@ -55,6 +53,8 @@ class Deployment(graphene.ObjectType):
 
     def resolve_blueprint(self, args, context, info):
         """"Get blueprint the deployment is based on."""
+        from cloudify_graphql.model.blueprint import Blueprint
+
         url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
         headers = {
             'Tenant': app.config['TENANT'],

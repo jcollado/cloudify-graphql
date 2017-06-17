@@ -4,12 +4,20 @@
 
 import graphene
 import iso8601
+import requests
+
+from flask import current_app as app
+from requests.auth import HTTPBasicAuth
 
 
 class Blueprint(graphene.ObjectType):
     """A blueprint."""
     created_at = graphene.types.datetime.DateTime(
         description='Time when the blueprint was uploaded')
+    deployments = graphene.List(
+        'cloudify_graphql.model.deployment.Deployment',
+        description='The deployments based on the blueprint.'
+    )
     description = graphene.String(description='Blueprint description')
     id = graphene.String(description='Blueprint ID')
     main_file_name = graphene.String(description='Blueprint main file name')
@@ -34,3 +42,27 @@ class Blueprint(graphene.ObjectType):
                 else None
             ),
         )
+
+    def resolve_deployments(self, args, context, info):
+        """Get deployments based on the blueprint."""
+        from cloudify_graphql.model.deployment import Deployment
+
+        url = 'http://{}/api/v3/deployments'.format(app.config['MANAGER_IP'])
+        headers = {
+            'Tenant': app.config['TENANT'],
+        }
+        params = {
+            'blueprint_id': self.id,
+        }
+        response = requests.get(
+            url,
+            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
+            headers=headers,
+            params=params,
+        )
+        deployments = [
+            Deployment.from_rest(deployment_data)
+            for deployment_data
+            in response.json()['items']
+        ]
+        return deployments
