@@ -3,6 +3,7 @@
 """User module."""
 
 import graphene
+import iso8601
 
 
 class User(graphene.ObjectType):
@@ -14,3 +15,19 @@ class User(graphene.ObjectType):
     role = graphene.String(description='User role (admin or user)')
     tenants = graphene.Int(description='Tenant count')
     username = graphene.String(description='User name')
+
+    @classmethod
+    def from_rest(cls, user_data):
+        """Create user from REST data."""
+        return cls(
+            active=user_data['active'],
+            groups=user_data['groups'],
+            last_login_at=(
+                iso8601.parse_date(user_data['last_login_at'])
+                if user_data['last_login_at']
+                else None
+            ),
+            role=user_data['role'],
+            tenants=user_data['tenants'],
+            username=user_data['username'],
+        )

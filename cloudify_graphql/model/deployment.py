@@ -32,6 +32,27 @@ class Deployment(graphene.ObjectType):
     updated_at = graphene.types.datetime.DateTime(
         description='Time when the deployment was last updated at')
 
+    @classmethod
+    def from_rest(cls, deployment_data):
+        """Create deployment from REST data."""
+        return cls(
+            blueprint_id=deployment_data['blueprint_id'],
+            created_at=(
+                iso8601.parse_date(deployment_data['created_at'])
+                if deployment_data['created_at']
+                else None
+            ),
+            created_by=deployment_data['created_by'],
+            description=deployment_data['description'],
+            id=deployment_data['id'],
+            tenant_name=deployment_data['tenant_name'],
+            updated_at=(
+                iso8601.parse_date(deployment_data['updated_at'])
+                if deployment_data['updated_at']
+                else None
+            ),
+        )
+
     def resolve_blueprint(self, args, context, info):
         """"Get blueprint the deployment is based on."""
         url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
@@ -48,19 +69,5 @@ class Deployment(graphene.ObjectType):
             params=params,
         )
         blueprint_data = response.json()['items'][0]
-        blueprint = Blueprint(
-            created_at=(
-                iso8601.parse_date(blueprint_data['created_at'])
-                if blueprint_data['created_at']
-                else None
-            ),
-            description=blueprint_data['description'],
-            id=blueprint_data['id'],
-            main_file_name=blueprint_data['main_file_name'],
-            updated_at=(
-                iso8601.parse_date(blueprint_data['updated_at'])
-                if blueprint_data['updated_at']
-                else None
-            ),
-        )
+        blueprint = Blueprint.from_rest(blueprint_data)
         return blueprint

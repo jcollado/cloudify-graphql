@@ -4,7 +4,6 @@
 
 import graphene
 import graphene.types.datetime
-import iso8601
 import requests
 
 from flask import current_app as app
@@ -53,21 +52,7 @@ class Query(graphene.ObjectType):
             headers=headers,
         )
         blueprints = [
-            Blueprint(
-                created_at=(
-                    iso8601.parse_date(blueprint_data['created_at'])
-                    if blueprint_data['created_at']
-                    else None
-                ),
-                description=blueprint_data['description'],
-                id=blueprint_data['id'],
-                main_file_name=blueprint_data['main_file_name'],
-                updated_at=(
-                    iso8601.parse_date(blueprint_data['updated_at'])
-                    if blueprint_data['updated_at']
-                    else None
-                ),
-            )
+            Blueprint.from_rest(blueprint_data)
             for blueprint_data
             in response.json()['items']
         ]
@@ -85,23 +70,7 @@ class Query(graphene.ObjectType):
             headers=headers,
         )
         deployments = [
-            Deployment(
-                blueprint_id=deployment_data['blueprint_id'],
-                created_at=(
-                    iso8601.parse_date(deployment_data['created_at'])
-                    if deployment_data['created_at']
-                    else None
-                ),
-                created_by=deployment_data['created_by'],
-                description=deployment_data['description'],
-                id=deployment_data['id'],
-                tenant_name=deployment_data['tenant_name'],
-                updated_at=(
-                    iso8601.parse_date(deployment_data['updated_at'])
-                    if deployment_data['updated_at']
-                    else None
-                ),
-            )
+            Deployment.from_rest(deployment_data)
             for deployment_data
             in response.json()['items']
         ]
@@ -123,7 +92,7 @@ class Query(graphene.ObjectType):
             headers=headers,
         )
         tenants = [
-            Tenant(**tenant_data)
+            Tenant.from_rest(tenant_data)
             for tenant_data
             in response.json()['items']
         ]
@@ -141,18 +110,7 @@ class Query(graphene.ObjectType):
             headers=headers,
         )
         users = [
-            User(
-                active=user_data['active'],
-                groups=user_data['groups'],
-                last_login_at=(
-                    iso8601.parse_date(user_data['last_login_at'])
-                    if user_data['last_login_at']
-                    else None
-                ),
-                role=user_data['role'],
-                tenants=user_data['tenants'],
-                username=user_data['username'],
-            )
+            User.from_rest(user_data)
             for user_data
             in response.json()['items']
         ]
@@ -170,11 +128,7 @@ class Query(graphene.ObjectType):
             headers=headers,
         )
         user_groups = [
-            UserGroup(
-                name=user_group_data['name'],
-                tenants=user_group_data['tenants'],
-                users=user_group_data['users'],
-            )
+            UserGroup.from_rest(user_group_data)
             for user_group_data
             in response.json()['items']
         ]
