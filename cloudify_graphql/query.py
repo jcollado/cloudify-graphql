@@ -10,23 +10,8 @@ import requests
 from flask import current_app as app
 from requests.auth import HTTPBasicAuth
 
-
-class Tenant(graphene.ObjectType):
-    """A tenant."""
-    groups = graphene.Int(description='Group count')
-    name = graphene.String(description='Tenant name')
-    users = graphene.Int(description='User count')
-
-
-class User(graphene.ObjectType):
-    """A user."""
-    active = graphene.Boolean(description='User status (active or suspended)')
-    groups = graphene.Int(description='Group count')
-    last_login_at = graphene.types.datetime.DateTime(
-        description='Date of last request performed by the user')
-    role = graphene.String(description='User role (admin or user)')
-    tenants = graphene.Int(description='Tenant count')
-    username = graphene.String(description='User name')
+from cloudify_graphql.model.tenant import Tenant
+from cloudify_graphql.model.user import User
 
 
 class Query(graphene.ObjectType):
