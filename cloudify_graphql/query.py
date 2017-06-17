@@ -12,6 +12,7 @@ from requests.auth import HTTPBasicAuth
 
 from cloudify_graphql.model.tenant import Tenant
 from cloudify_graphql.model.user import User
+from cloudify_graphql.model.user_group import UserGroup
 
 
 class Query(graphene.ObjectType):
@@ -24,6 +25,10 @@ class Query(graphene.ObjectType):
     users = graphene.List(
         User,
         description='Cloudify users',
+    )
+    user_groups = graphene.List(
+        UserGroup,
+        description='Cloudify user groups',
     )
 
     def resolve_ping(self, args, context, info):
@@ -76,3 +81,25 @@ class Query(graphene.ObjectType):
             in response.json()['items']
         ]
         return users
+
+    def resolve_user_groups(self, args, context, info):
+        """Get list of user groups."""
+        url = 'http://{}/api/v3/user-groups'.format(app.config['MANAGER_IP'])
+        headers = {
+            'Tenant': app.config['TENANT'],
+        }
+        response = requests.get(
+            url,
+            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
+            headers=headers,
+        )
+        user_groups = [
+            UserGroup(
+                name=user_group_data['name'],
+                tenants=user_group_data['tenants'],
+                users=user_group_data['users'],
+            )
+            for user_group_data
+            in response.json()['items']
+        ]
+        return user_groups
