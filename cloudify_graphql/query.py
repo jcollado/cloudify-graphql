@@ -11,6 +11,7 @@ from flask import current_app as app
 from requests.auth import HTTPBasicAuth
 
 from cloudify_graphql.model.blueprint import Blueprint
+from cloudify_graphql.model.deployment import Deployment
 from cloudify_graphql.model.tenant import Tenant
 from cloudify_graphql.model.user import User
 from cloudify_graphql.model.user_group import UserGroup
@@ -21,6 +22,10 @@ class Query(graphene.ObjectType):
     blueprints = graphene.List(
         Blueprint,
         description='Cloudify blueprints',
+    )
+    deployments = graphene.List(
+        Deployment,
+        description='Cloudify deployments',
     )
     ping = graphene.String(description='Check API status')
     tenants = graphene.List(
@@ -67,6 +72,40 @@ class Query(graphene.ObjectType):
             in response.json()['items']
         ]
         return blueprints
+
+    def resolve_deployments(self, args, context, info):
+        """Get list of deployments."""
+        url = 'http://{}/api/v3/deployments'.format(app.config['MANAGER_IP'])
+        headers = {
+            'Tenant': app.config['TENANT'],
+        }
+        response = requests.get(
+            url,
+            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
+            headers=headers,
+        )
+        deployments = [
+            Deployment(
+                blueprint_id=deployment_data['blueprint_id'],
+                created_at=(
+                    iso8601.parse_date(deployment_data['created_at'])
+                    if deployment_data['created_at']
+                    else None
+                ),
+                created_by=deployment_data['created_by'],
+                description=deployment_data['description'],
+                id=deployment_data['id'],
+                tenant_name=deployment_data['tenant_name'],
+                updated_at=(
+                    iso8601.parse_date(deployment_data['updated_at'])
+                    if deployment_data['updated_at']
+                    else None
+                ),
+            )
+            for deployment_data
+            in response.json()['items']
+        ]
+        return deployments
 
     def resolve_ping(self, args, context, info):
         """Return ping response."""
