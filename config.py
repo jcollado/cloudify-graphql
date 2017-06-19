@@ -10,9 +10,6 @@ class Config(object):
 class DevelopmentConfig(Config):
     """Development configuration."""
     MANAGER_IP = '172.20.0.2'
-    TENANT = 'default_tenant'
-    USER = 'admin'
-    PASSWORD = 'admin'
 
 
 config = {

@@ -7,7 +7,6 @@ import iso8601
 import requests
 
 from flask import current_app as app
-from requests.auth import HTTPBasicAuth
 
 
 class Execution(graphene.ObjectType):
@@ -74,14 +73,14 @@ class Execution(graphene.ObjectType):
 
         url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         params = {
             'id': self.blueprint_id,
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
             params=params,
         )
@@ -95,14 +94,14 @@ class Execution(graphene.ObjectType):
 
         url = 'http://{}/api/v3/deployments'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         params = {
             'id': self.deployment_id,
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
             params=params,
         )

@@ -7,7 +7,6 @@ import graphene.types.datetime
 import requests
 
 from flask import current_app as app
-from requests.auth import HTTPBasicAuth
 
 from cloudify_graphql.model.blueprint import Blueprint
 from cloudify_graphql.model.deployment import Deployment
@@ -49,11 +48,11 @@ class Query(graphene.ObjectType):
         """Get list of blueprints."""
         url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
         )
         blueprints = [
@@ -67,11 +66,11 @@ class Query(graphene.ObjectType):
         """Get list of deployments."""
         url = 'http://{}/api/v3/deployments'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
         )
         deployments = [
@@ -85,11 +84,11 @@ class Query(graphene.ObjectType):
         """Get list of executions."""
         url = 'http://{}/api/v3/executions'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
         )
         executions = [
@@ -107,11 +106,11 @@ class Query(graphene.ObjectType):
         """Get list of tenants."""
         url = 'http://{}/api/v3/tenants'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
         )
         tenants = [
@@ -125,11 +124,11 @@ class Query(graphene.ObjectType):
         """Get list of users."""
         url = 'http://{}/api/v3/users'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
         )
         users = [
@@ -143,11 +142,11 @@ class Query(graphene.ObjectType):
         """Get list of user groups."""
         url = 'http://{}/api/v3/user-groups'.format(app.config['MANAGER_IP'])
         headers = {
-            'Tenant': app.config['TENANT'],
+            'Authorization': context.headers['Authorization'],
+            'Tenant': context.headers['Tenant'],
         }
         response = requests.get(
             url,
-            auth=HTTPBasicAuth(app.config['USER'], app.config['PASSWORD']),
             headers=headers,
         )
         user_groups = [
