@@ -3,10 +3,10 @@
 """Deployment module."""
 
 import graphene
+import graphene.types.datetime
 import iso8601
-import requests
 
-from flask import current_app as app
+from cloudify_graphql.loader.blueprint import BlueprintLoader
 
 
 class Deployment(graphene.ObjectType):
@@ -52,21 +52,7 @@ class Deployment(graphene.ObjectType):
 
     def resolve_blueprint(self, args, context, info):
         """"Get blueprint the deployment is based on."""
-        from cloudify_graphql.model.blueprint import Blueprint
-
-        url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
         params = {
             'id': self.blueprint_id,
         }
-        response = requests.get(
-            url,
-            headers=headers,
-            params=params,
-        )
-        blueprint_data = response.json()['items'][0]
-        blueprint = Blueprint.from_rest(blueprint_data)
-        return blueprint
+        return BlueprintLoader.get().load(params)[0]

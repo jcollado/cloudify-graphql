@@ -3,17 +3,22 @@
 """GraphQL query."""
 
 import graphene
-import graphene.types.datetime
-import requests
-
-from flask import current_app as app
 
 from cloudify_graphql.model.blueprint import Blueprint
 from cloudify_graphql.model.deployment import Deployment
 from cloudify_graphql.model.execution import Execution
+from cloudify_graphql.model.event import Event
 from cloudify_graphql.model.tenant import Tenant
 from cloudify_graphql.model.user import User
 from cloudify_graphql.model.user_group import UserGroup
+
+from cloudify_graphql.loader.blueprint import BlueprintLoader
+from cloudify_graphql.loader.deployment import DeploymentLoader
+from cloudify_graphql.loader.event import EventLoader
+from cloudify_graphql.loader.execution import ExecutionLoader
+from cloudify_graphql.loader.tenant import TenantLoader
+from cloudify_graphql.loader.user import UserLoader
+from cloudify_graphql.loader.user_group import UserGroupLoader
 
 
 class Query(graphene.ObjectType):
@@ -29,6 +34,10 @@ class Query(graphene.ObjectType):
     executions = graphene.List(
         Execution,
         description='Cloudify executions',
+    )
+    events = graphene.List(
+        Event,
+        description='Cloudify events',
     )
     ping = graphene.String(description='Check API status')
     tenants = graphene.List(
@@ -46,57 +55,22 @@ class Query(graphene.ObjectType):
 
     def resolve_blueprints(self, args, context, info):
         """Get list of blueprints."""
-        url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
-        response = requests.get(
-            url,
-            headers=headers,
-        )
-        blueprints = [
-            Blueprint.from_rest(blueprint_data)
-            for blueprint_data
-            in response.json()['items']
-        ]
-        return blueprints
+        return BlueprintLoader.get().load()
 
     def resolve_deployments(self, args, context, info):
         """Get list of deployments."""
-        url = 'http://{}/api/v3/deployments'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
-        response = requests.get(
-            url,
-            headers=headers,
-        )
-        deployments = [
-            Deployment.from_rest(deployment_data)
-            for deployment_data
-            in response.json()['items']
-        ]
-        return deployments
+        return DeploymentLoader.get().load()
 
     def resolve_executions(self, args, context, info):
         """Get list of executions."""
-        url = 'http://{}/api/v3/executions'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
+        return ExecutionLoader.get().load()
+
+    def resolve_events(self, args, context, info):
+        """Get list of executions."""
+        params = {
+            'type': 'cloudify_event',
         }
-        response = requests.get(
-            url,
-            headers=headers,
-        )
-        executions = [
-            Execution.from_rest(execution_data)
-            for execution_data
-            in response.json()['items']
-        ]
-        return executions
+        return EventLoader.get().load(params)
 
     def resolve_ping(self, args, context, info):
         """Return ping response."""
@@ -104,54 +78,12 @@ class Query(graphene.ObjectType):
 
     def resolve_tenants(self, args, context, info):
         """Get list of tenants."""
-        url = 'http://{}/api/v3/tenants'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
-        response = requests.get(
-            url,
-            headers=headers,
-        )
-        tenants = [
-            Tenant.from_rest(tenant_data)
-            for tenant_data
-            in response.json()['items']
-        ]
-        return tenants
+        return TenantLoader.get().load()
 
     def resolve_users(self, args, context, info):
         """Get list of users."""
-        url = 'http://{}/api/v3/users'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
-        response = requests.get(
-            url,
-            headers=headers,
-        )
-        users = [
-            User.from_rest(user_data)
-            for user_data
-            in response.json()['items']
-        ]
-        return users
+        return UserLoader.get().load()
 
     def resolve_user_groups(self, args, context, info):
         """Get list of user groups."""
-        url = 'http://{}/api/v3/user-groups'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
-        response = requests.get(
-            url,
-            headers=headers,
-        )
-        user_groups = [
-            UserGroup.from_rest(user_group_data)
-            for user_group_data
-            in response.json()['items']
-        ]
-        return user_groups
+        return UserGroupLoader.get().load()

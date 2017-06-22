@@ -3,6 +3,7 @@
 """User module."""
 
 import graphene
+import graphene.types.datetime
 import iso8601
 
 

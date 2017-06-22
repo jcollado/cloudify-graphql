@@ -3,10 +3,11 @@
 """Execution module."""
 
 import graphene
+import graphene.types.datetime
 import iso8601
-import requests
 
-from flask import current_app as app
+from cloudify_graphql.loader.blueprint import BlueprintLoader
+from cloudify_graphql.loader.deployment import DeploymentLoader
 
 
 class Execution(graphene.ObjectType):
@@ -69,42 +70,14 @@ class Execution(graphene.ObjectType):
 
     def resolve_blueprint(self, args, context, info):
         """"Get blueprint the execution is in the context of."""
-        from cloudify_graphql.model.blueprint import Blueprint
-
-        url = 'http://{}/api/v3/blueprints'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
         params = {
             'id': self.blueprint_id,
         }
-        response = requests.get(
-            url,
-            headers=headers,
-            params=params,
-        )
-        blueprint_data = response.json()['items'][0]
-        blueprint = Blueprint.from_rest(blueprint_data)
-        return blueprint
+        return BlueprintLoader.get().load(params)[0]
 
     def resolve_deployment(self, args, context, info):
         """"Get deployment the execution is in the context of."""
-        from cloudify_graphql.model.deployment import Deployment
-
-        url = 'http://{}/api/v3/deployments'.format(app.config['MANAGER_IP'])
-        headers = {
-            'Authorization': context.headers['Authorization'],
-            'Tenant': context.headers['Tenant'],
-        }
         params = {
             'id': self.deployment_id,
         }
-        response = requests.get(
-            url,
-            headers=headers,
-            params=params,
-        )
-        deployment_data = response.json()['items'][0]
-        deployment = Deployment.from_rest(deployment_data)
-        return deployment
+        return DeploymentLoader.get().load(params)[0]
