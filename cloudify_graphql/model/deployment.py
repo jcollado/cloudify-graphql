@@ -7,6 +7,7 @@ import graphene.types.datetime
 import iso8601
 
 from cloudify_graphql.loader.blueprint import BlueprintLoader
+from cloudify_graphql.loader.execution import ExecutionLoader
 
 
 class Deployment(graphene.ObjectType):
@@ -23,6 +24,10 @@ class Deployment(graphene.ObjectType):
     created_by = graphene.String(
         description='The name of the user who created the deployment')
     description = graphene.String(description='Deployment description')
+    executions = graphene.List(
+        'cloudify_graphql.model.execution.Execution',
+        description='The executions based on the deployment.'
+    )
     id = graphene.String(description='Deployment ID')
     tenant_name = graphene.String(
         description='The tenant that owns the deployment')
@@ -56,3 +61,10 @@ class Deployment(graphene.ObjectType):
             'id': self.blueprint_id,
         }
         return BlueprintLoader.get().load(params)[0]
+
+    def resolve_executions(self, args, context, info):
+        """Get executions based on the blueprint."""
+        params = {
+            'deployment_id': self.id,
+        }
+        return ExecutionLoader.get().load(params)
