@@ -67,10 +67,7 @@ class Query(graphene.ObjectType):
 
     def resolve_events(self, args, context, info):
         """Get list of executions."""
-        params = {
-            'type': 'cloudify_event',
-        }
-        return EventLoader.get().load(params)
+        return EventLoader.get().load()
 
     def resolve_ping(self, args, context, info):
         """Return ping response."""

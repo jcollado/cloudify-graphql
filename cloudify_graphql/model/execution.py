@@ -91,6 +91,5 @@ class Execution(graphene.ObjectType):
         """Get events based on the blueprint."""
         params = {
             'execution_id': self.id,
-            'type': 'cloudify_event',
         }
         return EventLoader.get().load(params)

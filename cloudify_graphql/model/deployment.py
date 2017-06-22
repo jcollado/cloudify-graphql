@@ -78,6 +78,5 @@ class Deployment(graphene.ObjectType):
         """Get events based on the blueprint."""
         params = {
             'deployment_id': self.id,
-            'type': 'cloudify_event',
         }
         return EventLoader.get().load(params)

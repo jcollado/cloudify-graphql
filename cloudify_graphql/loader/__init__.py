@@ -15,6 +15,8 @@ class Loader(object):
 
     """Loader."""
 
+    DEFAULT_PARAMS = {}
+
     def __init__(self):
         self.cache = {}
 
@@ -30,6 +32,7 @@ class Loader(object):
         """Get data from cache or by querying the REST API."""
         if params is None:
             params = {}
+        params.update(self.DEFAULT_PARAMS)
         key = tuple(params.items())
         if key in self.cache:
             return self.cache[key]

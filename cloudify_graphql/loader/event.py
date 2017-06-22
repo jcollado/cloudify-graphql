@@ -11,6 +11,10 @@ class EventLoader(Loader):
 
     ENDPOINT = 'events'
 
+    DEFAULT_PARAMS = {
+        'type': 'cloudify_event'
+    }
+
     @property
     def model_cls(self):
         from cloudify_graphql.model.event import Event
