@@ -25,13 +25,40 @@ from cloudify_graphql.loader.user_group import UserGroupLoader
 
 class Query(graphene.ObjectType):
     """Main GraphQL query."""
+    blueprint = graphene.Field(
+        Blueprint,
+        id=graphene.Argument(
+            graphene.ID,
+            required=True,
+            description='Blueprint ID',
+        ),
+        description='Cloudify blueprint',
+    )
     blueprints = graphene.List(
         Blueprint,
         description='Cloudify blueprints',
     )
+    deployment = graphene.Field(
+        Deployment,
+        id=graphene.Argument(
+            graphene.ID,
+            required=True,
+            description='Deployment ID',
+        ),
+        description='Cloudify deployment',
+    )
     deployments = graphene.List(
         Deployment,
         description='Cloudify deployments',
+    )
+    execution = graphene.Field(
+        Execution,
+        id=graphene.Argument(
+            graphene.ID,
+            required=True,
+            description='Execution ID',
+        ),
+        description='Cloudify execution',
     )
     executions = graphene.List(
         Execution,
@@ -59,13 +86,28 @@ class Query(graphene.ObjectType):
         description='Cloudify user groups',
     )
 
+    def resolve_blueprint(self, args, context, info):
+        """Get blueprint by ID."""
+        blueprints = BlueprintLoader.get().load(args)
+        return blueprints[0] if blueprints else None
+
     def resolve_blueprints(self, args, context, info):
         """Get list of blueprints."""
         return BlueprintLoader.get().load()
 
+    def resolve_deployment(self, args, context, info):
+        """Get deployment by ID."""
+        deployments = DeploymentLoader.get().load(args)
+        return deployments[0] if deployments else None
+
     def resolve_deployments(self, args, context, info):
         """Get list of deployments."""
         return DeploymentLoader.get().load()
+
+    def resolve_execution(self, args, context, info):
+        """Get execution by ID."""
+        executions = ExecutionLoader.get().load(args)
+        return executions[0] if executions else None
 
     def resolve_executions(self, args, context, info):
         """Get list of executions."""
