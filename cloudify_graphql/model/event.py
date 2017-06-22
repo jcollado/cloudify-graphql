@@ -8,6 +8,7 @@ import iso8601
 
 from cloudify_graphql.loader.blueprint import BlueprintLoader
 from cloudify_graphql.loader.deployment import DeploymentLoader
+from cloudify_graphql.loader.execution import ExecutionLoader
 
 
 class Event(graphene.ObjectType):
@@ -27,6 +28,10 @@ class Event(graphene.ObjectType):
         description='The ID of the deployment the event is in the context of'
     )
     event_type = graphene.String(description='Event type name')
+    execution = graphene.Field(
+        'cloudify_graphql.model.execution.Execution',
+        description='The running execution when the event happened',
+    )
     execution_id = graphene.String(
         description='The ID of the running execution when the event happened'
     )
@@ -92,3 +97,10 @@ class Event(graphene.ObjectType):
             'id': self.deployment_id,
         }
         return DeploymentLoader.get().load(params)[0]
+
+    def resolve_execution(self, args, context, info):
+        """Get the running execution when the event happened."""
+        params = {
+            'id': self.execution_id
+        }
+        return ExecutionLoader.get().load(params)[0]
