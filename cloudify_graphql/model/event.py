@@ -17,14 +17,14 @@ class Event(graphene.ObjectType):
         'cloudify_graphql.model.blueprint.Blueprint',
         description='The blueprint the event is in the context of',
     )
-    blueprint_id = graphene.String(
+    blueprint_id = graphene.ID(
         description='The ID of the blueprint the event is in the context of'
     )
     deployment = graphene.Field(
         'cloudify_graphql.model.deployment.Deployment',
         description='The deployment the event is in the context of',
     )
-    deployment_id = graphene.String(
+    deployment_id = graphene.ID(
         description='The ID of the deployment the event is in the context of'
     )
     event_type = graphene.String(description='Event type name')
@@ -32,11 +32,11 @@ class Event(graphene.ObjectType):
         'cloudify_graphql.model.execution.Execution',
         description='The running execution when the event happened',
     )
-    execution_id = graphene.String(
+    execution_id = graphene.ID(
         description='The ID of the running execution when the event happened'
     )
     message = graphene.String(description='Message text')
-    node_instance_id = graphene.String(
+    node_instance_id = graphene.ID(
         description='The ID of the node instance that reported the event'
     )
     node_name = graphene.String(

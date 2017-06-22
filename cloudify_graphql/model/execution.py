@@ -18,7 +18,7 @@ class Execution(graphene.ObjectType):
         'cloudify_graphql.model.blueprint.Blueprint',
         description='The blueprint the execution is in the context of',
     )
-    blueprint_id = graphene.String(
+    blueprint_id = graphene.ID(
         description=(
             'The ID of the blueprint the execution is in the context of'
         )
@@ -31,7 +31,7 @@ class Execution(graphene.ObjectType):
         'cloudify_graphql.model.deployment.Deployment',
         description='The deployment the execution is in the context of',
     )
-    deployment_id = graphene.String(
+    deployment_id = graphene.ID(
         description=(
             'The ID of the deployment the execution is in the context of'
         )
@@ -43,7 +43,7 @@ class Execution(graphene.ObjectType):
         'cloudify_graphql.model.event.Event',
         description='The events based on the execution.'
     )
-    id = graphene.String(description='Execution ID')
+    id = graphene.ID(description='Execution ID')
     is_system_workflow = graphene.Boolean(
         description='Whether the execution is a system workflow or not'
     )

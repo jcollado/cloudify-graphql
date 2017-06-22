@@ -18,7 +18,7 @@ class Deployment(graphene.ObjectType):
         'cloudify_graphql.model.blueprint.Blueprint',
         description='The blueprint the deployment is based on',
     )
-    blueprint_id = graphene.String(
+    blueprint_id = graphene.ID(
         description='The ID of the blueprint the deployment is based on',
     )
     created_at = graphene.types.datetime.DateTime(
@@ -34,7 +34,7 @@ class Deployment(graphene.ObjectType):
         'cloudify_graphql.model.event.Event',
         description='The events based on the deployment.'
     )
-    id = graphene.String(description='Deployment ID')
+    id = graphene.ID(description='Deployment ID')
     logs = graphene.List(
         'cloudify_graphql.model.log.Log',
         description='The logs based on the deployment.'

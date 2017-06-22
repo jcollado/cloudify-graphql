@@ -29,7 +29,7 @@ class Blueprint(graphene.ObjectType):
         'cloudify_graphql.model.event.Event',
         description='The events based on the blueprint.'
     )
-    id = graphene.String(description='Blueprint ID')
+    id = graphene.ID(description='Blueprint ID')
     logs = graphene.List(
         'cloudify_graphql.model.log.Log',
         description='The logs based on the blueprint.'
