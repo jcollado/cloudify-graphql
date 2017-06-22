@@ -9,6 +9,7 @@ import iso8601
 from cloudify_graphql.loader.deployment import DeploymentLoader
 from cloudify_graphql.loader.execution import ExecutionLoader
 from cloudify_graphql.loader.event import EventLoader
+from cloudify_graphql.loader.log import LogLoader
 
 
 class Blueprint(graphene.ObjectType):
@@ -19,6 +20,7 @@ class Blueprint(graphene.ObjectType):
         'cloudify_graphql.model.deployment.Deployment',
         description='The deployments based on the blueprint.'
     )
+    description = graphene.String(description='Blueprint description')
     executions = graphene.List(
         'cloudify_graphql.model.execution.Execution',
         description='The executions based on the blueprint.'
@@ -27,8 +29,11 @@ class Blueprint(graphene.ObjectType):
         'cloudify_graphql.model.event.Event',
         description='The events based on the blueprint.'
     )
-    description = graphene.String(description='Blueprint description')
     id = graphene.String(description='Blueprint ID')
+    logs = graphene.List(
+        'cloudify_graphql.model.log.Log',
+        description='The logs based on the blueprint.'
+    )
     main_file_name = graphene.String(description='Blueprint main file name')
     updated_at = graphene.types.datetime.DateTime(
         description='Last time when the blueprint was uploaded')
@@ -72,3 +77,10 @@ class Blueprint(graphene.ObjectType):
             'blueprint_id': self.id,
         }
         return EventLoader.get().load(params)
+
+    def resolve_logs(self, args, context, info):
+        """Get logs based on the blueprint."""
+        params = {
+            'blueprint_id': self.id,
+        }
+        return LogLoader.get().load(params)

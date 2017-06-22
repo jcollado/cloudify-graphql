@@ -9,6 +9,7 @@ import iso8601
 from cloudify_graphql.loader.blueprint import BlueprintLoader
 from cloudify_graphql.loader.deployment import DeploymentLoader
 from cloudify_graphql.loader.event import EventLoader
+from cloudify_graphql.loader.log import LogLoader
 
 
 class Execution(graphene.ObjectType):
@@ -45,6 +46,10 @@ class Execution(graphene.ObjectType):
     id = graphene.String(description='Execution ID')
     is_system_workflow = graphene.Boolean(
         description='Whether the execution is a system workflow or not'
+    )
+    logs = graphene.List(
+        'cloudify_graphql.model.log.Log',
+        description='The logs based on the execution.'
     )
     status = graphene.String(description='Execution status')
     tenant_name = graphene.String(
@@ -93,3 +98,10 @@ class Execution(graphene.ObjectType):
             'execution_id': self.id,
         }
         return EventLoader.get().load(params)
+
+    def resolve_logs(self, args, context, info):
+        """Get logs based on the blueprint."""
+        params = {
+            'execution_id': self.id,
+        }
+        return LogLoader.get().load(params)

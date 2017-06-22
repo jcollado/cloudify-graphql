@@ -9,6 +9,7 @@ import iso8601
 from cloudify_graphql.loader.blueprint import BlueprintLoader
 from cloudify_graphql.loader.execution import ExecutionLoader
 from cloudify_graphql.loader.event import EventLoader
+from cloudify_graphql.loader.log import LogLoader
 
 
 class Deployment(graphene.ObjectType):
@@ -34,6 +35,10 @@ class Deployment(graphene.ObjectType):
         description='The events based on the deployment.'
     )
     id = graphene.String(description='Deployment ID')
+    logs = graphene.List(
+        'cloudify_graphql.model.log.Log',
+        description='The logs based on the deployment.'
+    )
     tenant_name = graphene.String(
         description='The tenant that owns the deployment')
     updated_at = graphene.types.datetime.DateTime(
@@ -80,3 +85,10 @@ class Deployment(graphene.ObjectType):
             'deployment_id': self.id,
         }
         return EventLoader.get().load(params)
+
+    def resolve_logs(self, args, context, info):
+        """Get logs based on the deployment."""
+        params = {
+            'deployment_id': self.id,
+        }
+        return LogLoader.get().load(params)
