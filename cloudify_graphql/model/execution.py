@@ -8,6 +8,7 @@ import iso8601
 
 from cloudify_graphql.loader.blueprint import BlueprintLoader
 from cloudify_graphql.loader.deployment import DeploymentLoader
+from cloudify_graphql.loader.event import EventLoader
 
 
 class Execution(graphene.ObjectType):
@@ -36,6 +37,10 @@ class Execution(graphene.ObjectType):
     )
     error = graphene.String(
         description='The execution error message on failure'
+    )
+    events = graphene.List(
+        'cloudify_graphql.model.event.Event',
+        description='The events based on the execution.'
     )
     id = graphene.String(description='Execution ID')
     is_system_workflow = graphene.Boolean(
@@ -81,3 +86,11 @@ class Execution(graphene.ObjectType):
             'id': self.deployment_id,
         }
         return DeploymentLoader.get().load(params)[0]
+
+    def resolve_events(self, args, context, info):
+        """Get events based on the blueprint."""
+        params = {
+            'execution_id': self.id,
+            'type': 'cloudify_event',
+        }
+        return EventLoader.get().load(params)
