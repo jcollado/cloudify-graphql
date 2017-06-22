@@ -6,8 +6,9 @@ import graphene
 
 from cloudify_graphql.model.blueprint import Blueprint
 from cloudify_graphql.model.deployment import Deployment
-from cloudify_graphql.model.execution import Execution
 from cloudify_graphql.model.event import Event
+from cloudify_graphql.model.execution import Execution
+from cloudify_graphql.model.log import Log
 from cloudify_graphql.model.tenant import Tenant
 from cloudify_graphql.model.user import User
 from cloudify_graphql.model.user_group import UserGroup
@@ -16,6 +17,7 @@ from cloudify_graphql.loader.blueprint import BlueprintLoader
 from cloudify_graphql.loader.deployment import DeploymentLoader
 from cloudify_graphql.loader.event import EventLoader
 from cloudify_graphql.loader.execution import ExecutionLoader
+from cloudify_graphql.loader.log import LogLoader
 from cloudify_graphql.loader.tenant import TenantLoader
 from cloudify_graphql.loader.user import UserLoader
 from cloudify_graphql.loader.user_group import UserGroupLoader
@@ -38,6 +40,10 @@ class Query(graphene.ObjectType):
     events = graphene.List(
         Event,
         description='Cloudify events',
+    )
+    logs = graphene.List(
+        Log,
+        description='Cloudify logs',
     )
     ping = graphene.String(description='Check API status')
     tenants = graphene.List(
@@ -68,6 +74,10 @@ class Query(graphene.ObjectType):
     def resolve_events(self, args, context, info):
         """Get list of executions."""
         return EventLoader.get().load()
+
+    def resolve_logs(self, args, context, info):
+        """Get list of executions."""
+        return LogLoader.get().load()
 
     def resolve_ping(self, args, context, info):
         """Return ping response."""
