@@ -34,10 +34,10 @@ class Loader(object):
         if key in self.cache:
             return self.cache[key]
 
-        users = self.load_from_rest(params)
+        items = self.load_from_rest(params)
 
-        self.cache[key] = users
-        return users
+        self.cache[key] = items
+        return items
 
     def load_from_rest(self, params):
         """Get data by querying the REST API."""
