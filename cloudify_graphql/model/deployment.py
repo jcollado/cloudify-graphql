@@ -8,6 +8,7 @@ import iso8601
 
 from cloudify_graphql.loader.blueprint import BlueprintLoader
 from cloudify_graphql.loader.execution import ExecutionLoader
+from cloudify_graphql.loader.event import EventLoader
 
 
 class Deployment(graphene.ObjectType):
@@ -27,6 +28,10 @@ class Deployment(graphene.ObjectType):
     executions = graphene.List(
         'cloudify_graphql.model.execution.Execution',
         description='The executions based on the deployment.'
+    )
+    events = graphene.List(
+        'cloudify_graphql.model.event.Event',
+        description='The events based on the deployment.'
     )
     id = graphene.String(description='Deployment ID')
     tenant_name = graphene.String(
@@ -68,3 +73,11 @@ class Deployment(graphene.ObjectType):
             'deployment_id': self.id,
         }
         return ExecutionLoader.get().load(params)
+
+    def resolve_events(self, args, context, info):
+        """Get events based on the blueprint."""
+        params = {
+            'deployment_id': self.id,
+            'type': 'cloudify_event',
+        }
+        return EventLoader.get().load(params)
