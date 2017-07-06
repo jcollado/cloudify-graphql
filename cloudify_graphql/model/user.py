@@ -7,13 +7,20 @@ import graphene.types.datetime
 import iso8601
 
 
+class Role(graphene.Enum):
+    """User role."""
+    USER = 'user'
+    ADMIN = 'admin'
+    SUSPENDED = 'suspended'
+
+
 class User(graphene.ObjectType):
     """A user."""
     active = graphene.Boolean(description='User status (active or suspended)')
     groups = graphene.Int(description='Group count')
     last_login_at = graphene.types.datetime.DateTime(
         description='Date of last request performed by the user')
-    role = graphene.String(description='User role (admin or user)')
+    role = graphene.Field(Role, description='User role')
     tenants = graphene.Int(description='Tenant count')
     username = graphene.String(description='User name')
 
