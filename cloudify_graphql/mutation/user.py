@@ -21,9 +21,13 @@ class CreateUser(graphene.Mutation):
     """Create user mutation."""
 
     class Input(object):
-        name = graphene.String(description='User name')
-        password = graphene.String(description='User password')
-        role = graphene.Argument(Role, description='User role')
+        name = graphene.String(description='User name', required=True)
+        password = graphene.String(description='User password', required=True)
+        role = graphene.Argument(
+            Role,
+            description='User role (USER by default)',
+            default_value='user',
+        )
 
     error_code = graphene.String(description='Response error code')
     message = graphene.String(description='Response message')
@@ -67,7 +71,7 @@ class DeleteUser(graphene.Mutation):
     """Delete user mutation."""
 
     class Input(object):
-        name = graphene.String(description='User name')
+        name = graphene.String(description='User name', required=True)
 
     error_code = graphene.String(description='Response error code')
     message = graphene.String(description='Response message')

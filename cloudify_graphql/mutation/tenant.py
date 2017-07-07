@@ -18,7 +18,7 @@ class CreateTenant(graphene.Mutation):
     """Create tenant mutation."""
 
     class Input(object):
-        name = graphene.String(description='Tenant name')
+        name = graphene.String(description='Tenant name', required=True)
 
     error_code = graphene.String(description='Response error code')
     message = graphene.String(description='Response message')
@@ -56,7 +56,7 @@ class DeleteTenant(graphene.Mutation):
     """Delete tenant mutation."""
 
     class Input(object):
-        name = graphene.String(description='Tenant name')
+        name = graphene.String(description='Tenant name', required=True)
 
     error_code = graphene.String(description='Response error code')
     message = graphene.String(description='Response message')
