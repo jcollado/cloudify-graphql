@@ -70,6 +70,91 @@ easily with something like::
 
     echo "Basic $(echo -n 'admin:admin' | base64)"
 
+Query Examples
+--------------
+
+- Get all tenant names
+
+  ::
+
+    {
+      tenants {
+        name
+      }
+    }
+
+
+- Get all blueprints and their deployments
+
+  ::
+
+    {
+      blueprints {
+        id
+        deployments {
+          id
+        }
+      }
+    }
+
+
+- Get all deployments and the blueprints they belong to
+
+  ::
+
+    {
+      deployments {
+        id
+        blueprint {
+          id
+        }
+      }
+    }
+
+
+- Get all executions and their events and logs
+
+  ::
+
+    {
+      executions {
+        logs {
+          message
+        }
+        events {
+          message
+        }
+      }
+    }
+
+Mutation Examples
+-----------------
+
+- Create new tenant
+
+  ::
+
+    mutation {
+      createTenant(name: "newTenant") {
+        statusCode
+        tenant {
+          name
+        }
+      }
+    }
+
+- Delete tenant
+
+  ::
+
+    mutation {
+      deleteTenant(name: "newTenant") {
+        statusCode
+        tenant {
+          name
+        }
+      }
+    }
 
 Credits
 ---------
